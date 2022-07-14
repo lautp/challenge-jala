@@ -1,0 +1,35 @@
+{
+	"name": "challenge-jala",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "node server.js",
+		"server": "nodemon server.js",
+		"client": "npm start --prefix client",
+		"clientinstall": "npm install --prefix client",
+		"dev": "concurrently \"npm run server\" \"npm run client\""
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lautp/challenge-jala.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/lautp/challenge-jala/issues"
+	},
+	"homepage": "https://github.com/lautp/challenge-jala#readme",
+	"dependencies": {
+		"bootstrap": "^5.1.3",
+		"dotenv": "^16.0.1",
+		"express": "^4.18.1",
+		"mongoose": "^6.4.4",
+		"passport": "^0.6.0",
+		"passport-local": "^1.0.0"
+	},
+	"devDependencies": {
+		"concurrently": "^7.2.2",
+		"nodemon": "^2.0.19"
+	}
+}
