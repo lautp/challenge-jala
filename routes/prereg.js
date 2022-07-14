@@ -30,6 +30,8 @@ router.post(
 
 			const temporalCode = crypto.randomUUID().slice(0, 6);
 
+			res.json(temporalCode);
+
 			//Aca va la logica que manda el email con el temporalCode para continuar con el registro
 
 			//La aplicacion a su vez deberia guardar el temporalCode en algun lado para luego comparar con el del usuario

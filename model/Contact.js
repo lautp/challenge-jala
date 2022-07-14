@@ -6,15 +6,11 @@ const ContactSchema = mongoose.Schema({
 		ref: 'users',
 	},
 	id: {
-		type: String,
-		required: true,
-	},
-	userId: {
-		type: String,
+		type: Number,
 		required: true,
 	},
 	name: {
-		type: Number,
+		type: String,
 		required: true,
 	},
 	email: {

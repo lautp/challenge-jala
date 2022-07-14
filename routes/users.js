@@ -1,7 +1,6 @@
 require('dotenv').config();
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const { body, validationResult } = require('express-validator');
 const express = require('express');
 const router = express.Router();
@@ -51,13 +50,10 @@ router.post(
 				return res.status(400).json({ msg: 'Email already exists' });
 			}
 
-			const temporalCode = crypto.randomUUID().slice(0, 6);
-
 			user = new User({
 				name,
 				email,
 				password,
-				temporalCode,
 				username,
 			});
 

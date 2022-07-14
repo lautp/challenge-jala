@@ -12,6 +12,7 @@ app.get('/', (req, res) => res.json({ msg: 'connected' }));
 app.use(express.json({ extended: false }));
 
 //Rutas
+app.use('/api/prereg', require('./routes/prereg'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/contact', require('./routes/contact'));
