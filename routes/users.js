@@ -1,6 +1,7 @@
 require('dotenv').config();
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { body, validationResult } = require('express-validator');
 const express = require('express');
 const router = express.Router();
@@ -27,6 +28,7 @@ router.post(
 	'/',
 	[
 		body('name', 'Enter a valid name').not().isEmpty(),
+		body('username', 'Enter a valid username').not().isEmpty(),
 		body('email', 'Enter a valid email').isEmail(),
 		body('password', 'Password must have at least 6 characters').isLength({
 			min: 6,
@@ -40,7 +42,7 @@ router.post(
 				error: errors,
 			});
 		}
-		const { name, email, password, role } = req.body;
+		const { name, email, password, username } = req.body;
 
 		try {
 			let user = await User.findOne({ email });
@@ -49,11 +51,14 @@ router.post(
 				return res.status(400).json({ msg: 'Email already exists' });
 			}
 
+			const temporalCode = crypto.randomUUID().slice(0, 6);
+
 			user = new User({
 				name,
 				email,
 				password,
-				role,
+				temporalCode,
+				username,
 			});
 
 			const salt = await bcryptjs.genSalt(10);
