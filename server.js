@@ -9,12 +9,12 @@ connectDB();
 app.get('/', (req, res) => res.json({ msg: 'connected' }));
 
 //Middleware
-// app.use(express.json({ extended: false }));
+app.use(express.json({ extended: false }));
 
 //Rutas
-// app.use('/api/user', require('./routes/user'));
-// app.use('/api/auth', require('./routes/auth'));
-// app.use('/api/order', require('./routes/contact'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/contact', require('./routes/contact'));
 
 const PORT = process.env.PORT || 5000;
 
