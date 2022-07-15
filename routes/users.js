@@ -23,53 +23,63 @@ router.get('/', async (req, res) => {
 // @ruta    PUT    api/users
 // @desc    Finish register process
 // @acceso  Public
-router.put('/:id', async (req, res) => {
-	const { name, username, password } = req.body;
+router.put(
+	'/:id',
+	[
+		body('name', 'Ingrese un nombre valido').not().isEmpty(),
+		body('email', 'Ingrese un email valido').isEmail(),
+		body('password', 'Ingrese un password de 6 caracteres o mas').isLength({
+			min: 6,
+		}),
+	],
+	async (req, res) => {
+		const { name, username, password } = req.body;
 
-	//Crea el objeto "user"
+		//Crea el objeto "user"
 
-	const userFields = {};
-	if (name) userFields.name = name;
-	if (username) userFields.username = username;
+		const userFields = {};
+		if (name) userFields.name = name;
+		if (username) userFields.username = username;
 
-	const salt = await bcryptjs.genSalt(10);
-	if (password) userFields.password = await bcryptjs.hash(password, salt);
+		const salt = await bcryptjs.genSalt(10);
+		if (password) userFields.password = await bcryptjs.hash(password, salt);
 
-	userFields.temporalCode = 'null';
+		userFields.temporalCode = 'null';
 
-	try {
-		let user = await User.findById(req.params.id);
+		try {
+			let user = await User.findById(req.params.id);
 
-		user = await User.findByIdAndUpdate(
-			req.params.id,
-			{ $set: userFields },
-			{ new: true }
-		);
+			user = await User.findByIdAndUpdate(
+				req.params.id,
+				{ $set: userFields },
+				{ new: true }
+			);
 
-		const payload = {
-			user: {
-				id: user.id,
-			},
-		};
+			const payload = {
+				user: {
+					id: user.id,
+				},
+			};
 
-		jwt.sign(
-			payload,
-			process.env.jwtSecret,
-			{
-				expiresIn: 360000,
-			},
-			(err, token) => {
-				if (err) throw err;
-				res.json({ token });
-			}
-		);
+			jwt.sign(
+				payload,
+				process.env.jwtSecret,
+				{
+					expiresIn: 360000,
+				},
+				(err, token) => {
+					if (err) throw err;
+					res.json({ token });
+				}
+			);
 
-		res.json(user);
-	} catch (err) {
-		console.error(err.msg);
-		res.status(500).send('server error');
+			res.json(user);
+		} catch (err) {
+			console.error(err.msg);
+			res.status(500).send('server error');
+		}
 	}
-});
+);
 
 // @route   DELETE    api/user/:id
 // @desc    Delete user
