@@ -18,8 +18,7 @@ function LoginForm({ history, homePath }) {
       password: password,
     };
     loginUser(data).then(res => {
-      console.log(res)
-      console.log(res.msg)
+      
     });
    
   }
