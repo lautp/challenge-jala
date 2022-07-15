@@ -12,7 +12,11 @@ import {
 import AuthContext from './authContext';
 import authReducer from './authReducer';
 import setAuthToken from '../../utils/setAuthToken';
-import { registerUser, loginUser } from '../../service/userService';
+import {
+	registerUser,
+	loginUser,
+	continueRegister,
+} from '../../service/userService';
 
 const AuthState = props => {
 	const initialState = {
@@ -35,6 +39,10 @@ const AuthState = props => {
 		} catch (err) {
 			dispatch({ type: AUTH_ERROR });
 		}
+	};
+
+	const continueReg = async data => {
+		continueRegister(data);
 	};
 
 	//Register User
@@ -104,6 +112,7 @@ const AuthState = props => {
 				isAuthenticated: state.isAuthenticated,
 				error: state.error,
 				register,
+				continueReg,
 				loadUser,
 				login,
 				logout,
