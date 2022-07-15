@@ -20,72 +20,56 @@ router.get('/', async (req, res) => {
 	}
 });
 
-// @ruta    POST    api/users
-// @desc    Register user
+// @ruta    PUT    api/users
+// @desc    Finish register process
 // @acceso  Public
-router.post(
-	'/',
-	[
-		body('name', 'Enter a valid name').not().isEmpty(),
-		body('username', 'Enter a valid username').not().isEmpty(),
-		body('email', 'Enter a valid email').isEmail(),
-		body('password', 'Password must have at least 6 characters').isLength({
-			min: 6,
-		}),
-	],
-	async (req, res) => {
-		const errors = validationResult(req);
+router.put('/:id', async (req, res) => {
+	const { name, username, password } = req.body;
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({
-				error: errors,
-			});
-		}
-		const { name, email, password, username } = req.body;
+	//Crea el objeto "user"
 
-		try {
-			let user = await User.findOne({ email });
+	const userFields = {};
+	if (name) userFields.name = name;
+	if (username) userFields.username = username;
 
-			if (user) {
-				return res.status(400).json({ msg: 'Email already exists' });
+	const salt = await bcryptjs.genSalt(10);
+	if (password) userFields.password = await bcryptjs.hash(password, salt);
+
+	userFields.temporalCode = 'null';
+
+	try {
+		let user = await User.findById(req.params.id);
+
+		user = await User.findByIdAndUpdate(
+			req.params.id,
+			{ $set: userFields },
+			{ new: true }
+		);
+
+		const payload = {
+			user: {
+				id: user.id,
+			},
+		};
+
+		jwt.sign(
+			payload,
+			process.env.jwtSecret,
+			{
+				expiresIn: 360000,
+			},
+			(err, token) => {
+				if (err) throw err;
+				res.json({ token });
 			}
+		);
 
-			user = new User({
-				name,
-				email,
-				password,
-				username,
-			});
-
-			const salt = await bcryptjs.genSalt(10);
-
-			user.password = await bcryptjs.hash(password, salt);
-
-			await user.save();
-
-			const payload = {
-				user: {
-					id: user.id,
-				},
-			};
-
-			jwt.sign(
-				payload,
-				process.env.jwtSecret,
-				{
-					expiresIn: 360000,
-				},
-				(err, token) => {
-					if (err) throw err;
-					res.json({ token });
-				}
-			);
-		} catch (err) {
-			console.error(err.message);
-			res.status(500).send('Server Error');
-		}
+		res.json(user);
+	} catch (err) {
+		console.error(err.msg);
+		res.status(500).send('server error');
 	}
-);
+});
 
 // @route   DELETE    api/user/:id
 // @desc    Delete user
