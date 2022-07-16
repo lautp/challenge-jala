@@ -18,7 +18,12 @@ function LoginForm({ history, homePath }) {
       password: password,
     };
     loginUser(data).then(res => {
-      
+      if (res.status === 200) {
+        sessionStorage.setItem("token", res.data.token);
+        history.push(homePath);
+      }else{  
+        alert(res.msg)
+      }
     });
    
   }

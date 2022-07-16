@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Layout, Space, Table, Button } from "antd";
+import { Link } from "react-router-dom";
+import {  Col, Row , Typography, Table, Button } from "antd";
 
 function ContactList({ history }) {
   const data = [
@@ -48,14 +49,23 @@ function ContactList({ history }) {
   const onChange = (pagination, filters, sorter, extra) => {
     setSortedInfo(sorter);
   };
+
+  const { Title } = Typography;
   return (
-    <Layout style={{ justifyContent: "space-between" }}>
-      <div>Contacts</div>
-      <Button style={{ width: "20%", marginTop: "16px" }} type="primary">
-        Add Contact
-      </Button>
-      <Table columns={columns} dataSource={data} onChange={onChange} />;
-    </Layout>
+    <>
+    <Row style= {{marginBottom: "1%"}}>
+      <Col span={12}>   <Title level={3}>All contacts</Title></Col>
+      <Col span={12}>
+      <Link to="/contacts/new">
+        <Button style={{ float:'right' }} type="primary">
+          Add Contact
+        </Button>
+        </Link>
+      </Col>
+    </Row>
+    <Table columns={columns} dataSource={data} onChange={onChange} />;
+      
+    </>
   );
 }
 
