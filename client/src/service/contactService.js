@@ -14,7 +14,6 @@ export const createContact = async (name,mail) => {
    
     try {
         const res = await axios.post(url+"api/contact", data);
-        console.log(res);
         if (res.status === 200) {
             return res;
         }

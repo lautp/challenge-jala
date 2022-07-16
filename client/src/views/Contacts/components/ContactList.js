@@ -1,48 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {  Col, Row , Typography, Table, Button } from "antd";
+import { Col, Row, Typography, Table, Button ,Input} from "antd";
+import { getContacts } from "../../../service/contactService";
 
 function ContactList({ history }) {
-  const data = [
-    {
-      key: 2,
-      name: `adward King `,
-      age: 2,
-      address: `London, Park Lane no.`,
-    },
-    {
-      key: 10,
-      name: `edward King `,
-      age: 3,
-      address: `London, Park Lane no.`,
-    },
-    {
-      key: 20,
-      name: `zdward King `,
-      age: 5,
-      address: `London, Park Lane no.`,
-    },
-  ];
+  const [data, setData] = useState([]);
+  
+  const[dataSource,setDataSource] = useState([]);
+  const [value, setValue] = useState('');
+  const getData = async () => {
+    const res = await getContacts();
+    if (res.status === 200) {
+      //add to object key
+      res.data.map((item, index) => {
+        item.key = index;
+      });
+      setData(res.data);
+      setDataSource(res.data);
+    }
+  };
+
   const [sortedInfo, setSortedInfo] = useState({});
 
+  const FilterByNameInput = (
+    <Input
+      placeholder="Search Name"
+      value={value}
+      onChange={e => {
+        const currValue = e.target.value;
+        setValue(currValue);
+        const filteredData = data.filter(entry =>
+          entry.name.includes(currValue)
+        );
+        setDataSource(filteredData);
+      }}
+    />
+  );
   const columns = [
     {
-      title: "Name",
+      title: "id",
+      dataIndex: "key",
+      key: "key",
+      sorter: (a, b) => a.key - b.key,
+      sortOrder: sortedInfo.columnKey === "key" && sortedInfo.order,
+    },
+    {
+      title: FilterByNameInput,
       dataIndex: "name",
       key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter: (a,b ) => a.email.localeCompare(b.email),
       sortOrder: sortedInfo.columnKey === "name" ? sortedInfo.order : null,
     },
     {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-      sorter: (a, b) => a.age - b.age,
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
+      title: "email",
+      dataIndex: "email",
+      key: "email",
+      sorter: (a, b) => a.email.length - b.email.length,
+      sortOrder: sortedInfo.columnKey === "email" ? sortedInfo.order : null,
     },
   ];
 
@@ -50,21 +64,30 @@ function ContactList({ history }) {
     setSortedInfo(sorter);
   };
 
+
+
   const { Title } = Typography;
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <>
-    <Row style= {{marginBottom: "1%"}}>
-      <Col span={12}>   <Title level={3}>All contacts</Title></Col>
-      <Col span={12}>
-      <Link to="/contacts/new">
-        <Button style={{ float:'right' }} type="primary">
-          Add Contact
-        </Button>
-        </Link>
-      </Col>
-    </Row>
-    <Table columns={columns} dataSource={data} onChange={onChange} />;
-      
+      <Row style={{ marginBottom: "1%" }}>
+        <Col span={12}>
+          {" "}
+          <Title level={3}>All contacts</Title>
+        </Col>
+        <Col span={12}>
+          <Link to="/contacts/new">
+            <Button style={{ float: "right" }} type="primary">
+              Add Contact
+            </Button>
+          </Link>
+        </Col>
+      </Row>
+      <Table columns={columns} dataSource={dataSource} onChange={onChange} />;
     </>
   );
 }
