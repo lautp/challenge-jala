@@ -24,35 +24,35 @@ router.get('/', async (req, res) => {
 // @desc    Finish register process
 // @acceso  Public
 router.put(
-	'/:id',
+	'/',
 	[
 		body('name', 'Ingrese un nombre valido').not().isEmpty(),
+		body('username', 'Ingrese un username valido').not().isEmpty(),
 		body('email', 'Ingrese un email valido').isEmail(),
 		body('password', 'Ingrese un password de 6 caracteres o mas').isLength({
 			min: 6,
 		}),
 	],
 	async (req, res) => {
-		const { name, username, password } = req.body;
+		const { name, username, password , email} = req.body;
 
 		//Crea el objeto "user"
 
 		const userFields = {};
 		if (name) userFields.name = name;
 		if (username) userFields.username = username;
+		if (email) userFields.email = email;
 
 		const salt = await bcryptjs.genSalt(10);
 		if (password) userFields.password = await bcryptjs.hash(password, salt);
-
 		userFields.temporalCode = 'null';
 
 		try {
-			let user = await User.findById(req.params.id);
+			let user = await User.findOne({ email });
 
-			user = await User.findByIdAndUpdate(
-				req.params.id,
+			user = await User.findOneAndUpdate(
+				{ email},
 				{ $set: userFields },
-				{ new: true }
 			);
 
 			const payload = {
@@ -75,7 +75,7 @@ router.put(
 
 			res.json(user);
 		} catch (err) {
-			console.error(err.msg);
+			console.error(err);
 			res.status(500).send('server error');
 		}
 	}

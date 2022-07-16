@@ -16,7 +16,9 @@ function RegistrationForm({ nextAction }) {
     preRegisterUser(data).then(res => {
         if(res.status === 201){
           alert('Email Sent')
+          nextAction();
         }
+        alert('We could not send the email. The email address is already registered.')
     })
   }
   return (

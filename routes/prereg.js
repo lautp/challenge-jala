@@ -25,7 +25,7 @@ router.post(
 		try {
 			let user = await User.findOne({ email });
 
-			if (user) {
+			if (user && user.password !== 'null') {
 				return res.status(400).json({ msg: 'Email already exists' });
 			}
 
@@ -35,17 +35,26 @@ router.post(
 			const password = 'null';
 			const username = 'null';
 
-			user = new User({
+			// if user exists update if not create new user
+		
+			user2 = new User({
 				name,
 				email,
 				password,
 				username,
 				temporalCode,
 			});
-
-			await user.save();
+			if (!user) {
+				console.log('no exists');
+				await user2.save();
+			} else {
+				console.log('exists');
+				await User.findOneAndUpdate(
+					{ email },
+					{ $set: { temporalCode } },
+				);
+			}
 			//Aca va la logica que manda el email con el temporalCode para continuar con el registro
-
 			if (
 				mailer.sendEmail(
 					email,
@@ -54,8 +63,6 @@ router.post(
 						temporalCode
 				)
 			) {
-				//La aplicacion a su vez deberia guardar el temporalCode en algun lado para luego comparar con el del usuario
-				//Pero por ahora solo se muestra el mensaje de que el email fue enviado
 				return res.status(201).send({ msg: 'Email sent' });
 			} else {
 				return res.status(404).send({
@@ -75,6 +82,7 @@ router.post(
 router.get('/', async (req, res) => {
 	try {
 		const { temporalCode } = req.body;
+		console.log(temporalCode)
 		const user = await User.find({ temporalCode });
 		res.json(user);
 	} catch (err) {
