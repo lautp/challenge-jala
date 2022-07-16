@@ -2,25 +2,27 @@ import React, { useCallback, useState } from "react";
 import { Form, Input, Button } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import { FormattedMessage, useIntl } from "react-intl";
-import {preRegisterUser} from "../../../../../service/userService";
+import { preRegisterUser } from "../../../../../service/userService";
 
 function RegistrationForm({ nextAction }) {
   const intl = useIntl();
   const onFinish = useCallback(async (values) => {}, [nextAction]);
   const [email, setEmail] = useState("");
-  const submit = (e) =>{
+  const submit = (e) => {
     e.preventDefault();
     const data = {
       email: email,
-    }
-    preRegisterUser(data).then(res => {
-        if(res.status === 201){
-          alert('Email Sent')
-          nextAction();
-        }
-        alert('We could not send the email. The email address is already registered.')
-    })
-  }
+    };
+    preRegisterUser(data).then((res) => {
+      if (res.status === 201) {
+        alert("Email Sent");
+        sessionStorage.setItem("email", email);
+        nextAction();
+      }else{
+      alert("Email not sent, your email is already registered or invalid");
+      }
+    });
+  };
   return (
     <Form name="signup_form" className="container-form" onFinish={onFinish}>
       <Form.Item
@@ -49,7 +51,12 @@ function RegistrationForm({ nextAction }) {
         />
       </Form.Item>
       <Form.Item>
-        <Button style={{ width: "100%" }} type="primary" htmlType="submit" onClick={(e) => submit(e)}>
+        <Button
+          style={{ width: "100%" }}
+          type="primary"
+          htmlType="submit"
+          onClick={(e) => submit(e)}
+        >
           <FormattedMessage id="registration.form.button.label" />
         </Button>
       </Form.Item>

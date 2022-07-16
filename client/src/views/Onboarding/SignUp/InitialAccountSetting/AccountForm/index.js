@@ -1,12 +1,31 @@
-import React, { useCallback } from "react";
+import React, { useCallback,useState } from "react";
 import { Form, Input, Button, Checkbox } from "antd";
 import { LockOutlined, UserAddOutlined } from "@ant-design/icons";
 import { FormattedMessage, useIntl } from "react-intl";
+import {updateUser} from "../../../../../service/userService";
 
 function AccountForm({ gotoHomePage }) {
   const intl = useIntl();
 
-  const onFinish = useCallback(async (values) => {}, [gotoHomePage]);
+  const user = {
+    email: sessionStorage.getItem("email"),
+    name: "",
+    username: "",
+    password: "",
+  }
+  
+  const onFinish = useCallback(async (values) => {
+    
+    updateUser(user).then((res) => {
+      if (res.status === 200) {
+        console.log("success");
+        gotoHomePage();
+      }else{
+        console.log(res);
+      }
+    }
+    );
+  }, [gotoHomePage]);
 
   return (
     <Form
@@ -15,6 +34,21 @@ function AccountForm({ gotoHomePage }) {
       initialValues={{ sendMeEmails: true }}
       onFinish={onFinish}
     >
+    <Form.Item
+      name="name"
+      rules={[
+        {
+          required: true,
+          message:"Enter your name"
+        },
+      ]}
+    >
+      <Input
+        prefix={<UserAddOutlined />}  
+        placeholder="all your name"
+        onChange={(e) => {user.name=e.target.value}}
+      />
+    </Form.Item>
       <Form.Item
         name="username"
         rules={[
@@ -25,7 +59,8 @@ function AccountForm({ gotoHomePage }) {
           },
         ]}
       >
-        <Input prefix={<UserAddOutlined />} placeholder="User Name" />
+        <Input prefix={<UserAddOutlined />} placeholder="User Name"  
+         onChange={(e) => {user.username=e.target.value}}/>
       </Form.Item>
       <Form.Item
         name="password"
@@ -44,6 +79,7 @@ function AccountForm({ gotoHomePage }) {
           placeholder={intl.formatMessage({
             id: "account-settings.form.password.placehorder",
           })}
+          onChange={(e) => {user.password=e.target.value}}
         />
       </Form.Item>
       <Form.Item>

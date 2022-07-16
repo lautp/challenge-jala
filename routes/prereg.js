@@ -79,10 +79,9 @@ router.post(
 // @route    GET    api/prereg
 // @desc    Continue register process
 // @acceso  Public
-router.get('/', async (req, res) => {
+router.get('/:temporalCode', async (req, res) => {
 	try {
-		const { temporalCode } = req.body;
-		console.log(temporalCode)
+		const temporalCode = req.params.temporalCode;
 		const user = await User.find({ temporalCode });
 		res.json(user);
 	} catch (err) {

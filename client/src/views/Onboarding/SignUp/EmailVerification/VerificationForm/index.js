@@ -1,9 +1,18 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { CodeVerification } from "../../../../../components";
+import { codeUserVerification } from "../../../../../service/userService";
 
 function VerificationForm({ nextAction }) {
-  const onFinish = useCallback(async (codeValue) => {}, [nextAction]);
+  const onFinish = useCallback(async (codeValue) => {
+    codeUserVerification(codeValue).then((res) => {
+      if (res.status === 200 && res.data.length > 0) {
+        nextAction();
+      }else{
+        alert("Invalid Code");
+      }
+    });
+  });
 
   return (
     <React.Fragment>

@@ -46,7 +46,7 @@ router.put(
 		const salt = await bcryptjs.genSalt(10);
 		if (password) userFields.password = await bcryptjs.hash(password, salt);
 		userFields.temporalCode = 'null';
-
+		console.log(name, username, password, email);
 		try {
 			let user = await User.findOne({ email });
 
@@ -54,7 +54,6 @@ router.put(
 				{ email},
 				{ $set: userFields },
 			);
-
 			const payload = {
 				user: {
 					id: user.id,

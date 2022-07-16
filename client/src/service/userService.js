@@ -24,11 +24,22 @@ export const preRegisterUser = async (data) => {
     return err.response;
   }
 };
-const getByCode = async () => {
+export const codeUserVerification = async (temporal) => {
   try {
-    const res = await axios.get(url + "api/prereg");
+    const res = await axios.get(url + "api/prereg/"+temporal);
     if (res.status === 200) {
-      return res.data;
+      return res;
+    }
+  } catch (err) {
+    return err.response;
+  }
+};
+
+export const updateUser = async (data) => {
+  try {
+    const res = await axios.put(url + "api/users", data);
+    if (res.status === 200) {
+      return res;
     }
   } catch (err) {
     return err.response;

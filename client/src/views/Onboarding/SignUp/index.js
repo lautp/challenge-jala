@@ -28,8 +28,10 @@ function SignUp() {
     setCurrentView(currentView - 1);
   }, [currentView]);
 
-  const gotoHomePage = useCallback(() => {}, [history]);
-
+  const gotoHomePage = useCallback(() => {
+    history.push("contacts/all");
+    sessionStorage.removeItem("email");
+  }, [history]);
   function getForm() {
     const Component = steps[currentView].content;
     return (
