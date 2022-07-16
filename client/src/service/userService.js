@@ -8,7 +8,7 @@ export const loginUser = async (data) => {
         const res = await axios.post(url+"api/auth", data);
         if (res.status === 200) {
             sessionStorage.setItem("token", res.data.token);
-            return res.data;
+            return res;
         }
     } catch (err) {
         return err.response.data;
