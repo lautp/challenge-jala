@@ -10,9 +10,8 @@ function CreateContact({ history }) {
   const submit = (e) => {
     e.preventDefault();
     createContact(name, email).then((res) => {
-      console.log(res);
-      if (res.status === 201) {
-        history.push("/contacts");
+      if (res.status === 200) {
+        history.push("/contacts/all");
       }
     });
   };

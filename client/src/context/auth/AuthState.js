@@ -33,7 +33,7 @@ const AuthState = props => {
 		setAuthToken(localStorage.token);
 
 		try {
-			//aca podria ir una logica para traer al objeto user que se loguee
+			
 
 			dispatch({ type: USER_LOADED, payload: res.data });
 		} catch (err) {

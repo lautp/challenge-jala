@@ -5,7 +5,7 @@ import {  Col, Row , Typography, Table, Button } from "antd";
 function ContactList({ history }) {
   const data = [
     {
-      key: 20,
+      key: 2,
       name: `adward King `,
       age: 2,
       address: `London, Park Lane no.`,
