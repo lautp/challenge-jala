@@ -20,48 +20,40 @@ router.get('/', async (req, res) => {
 	}
 });
 
-// @ruta    POST    api/users
-// @desc    Register user
+// @ruta    PUT    api/users
+// @desc    Finish register process
 // @acceso  Public
-router.post(
-	'/',
+router.put(
+	'/:id',
 	[
-		body('name', 'Enter a valid name').not().isEmpty(),
-		body('username', 'Enter a valid username').not().isEmpty(),
-		body('email', 'Enter a valid email').isEmail(),
-		body('password', 'Password must have at least 6 characters').isLength({
+		body('name', 'Ingrese un nombre valido').not().isEmpty(),
+		body('email', 'Ingrese un email valido').isEmail(),
+		body('password', 'Ingrese un password de 6 caracteres o mas').isLength({
 			min: 6,
 		}),
 	],
 	async (req, res) => {
-		const errors = validationResult(req);
+		const { name, username, password } = req.body;
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({
-				error: errors,
-			});
-		}
-		const { name, email, password, username } = req.body;
+		//Crea el objeto "user"
+
+		const userFields = {};
+		if (name) userFields.name = name;
+		if (username) userFields.username = username;
+
+		const salt = await bcryptjs.genSalt(10);
+		if (password) userFields.password = await bcryptjs.hash(password, salt);
+
+		userFields.temporalCode = 'null';
 
 		try {
-			let user = await User.findOne({ email });
+			let user = await User.findById(req.params.id);
 
-			if (user) {
-				return res.status(400).json({ msg: 'Email already exists' });
-			}
-
-			user = new User({
-				name,
-				email,
-				password,
-				username,
-			});
-
-			const salt = await bcryptjs.genSalt(10);
-
-			user.password = await bcryptjs.hash(password, salt);
-
-			await user.save();
+			user = await User.findByIdAndUpdate(
+				req.params.id,
+				{ $set: userFields },
+				{ new: true }
+			);
 
 			const payload = {
 				user: {
@@ -80,9 +72,11 @@ router.post(
 					res.json({ token });
 				}
 			);
+
+			res.json(user);
 		} catch (err) {
-			console.error(err.message);
-			res.status(500).send('Server Error');
+			console.error(err.msg);
+			res.status(500).send('server error');
 		}
 	}
 );

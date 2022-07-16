@@ -18,6 +18,10 @@ const UserSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	temporalCode: {
+		type: String,
+		required: true,
+	},
 	date: {
 		type: Date,
 		default: Date.now,
